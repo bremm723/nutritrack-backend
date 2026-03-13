@@ -2,12 +2,12 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const authRoutes      = require('./routes/authRoutes');
-const userRoutes      = require('./routes/userRoutes');
-const foodRoutes      = require('./routes/foodRoutes');
-const foodLogRoutes   = require('./routes/foodLogRoutes');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const foodRoutes = require('./routes/foodRoutes');
+const foodLogRoutes = require('./routes/foodLogRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-
+const aiRoutes = require('./routes/aiRoutes');
 const app = express();
 
 // --------------- Middleware ---------------
@@ -15,11 +15,12 @@ app.use(cors());
 app.use(express.json());
 
 // --------------- Routes ---------------
-app.use('/auth',      authRoutes);
-app.use('/user',      userRoutes);
-app.use('/foods',     foodRoutes);
-app.use('/foodlogs',  foodLogRoutes);
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
+app.use('/foods', foodRoutes);
+app.use('/foodlogs', foodLogRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/ai', aiRoutes);
 
 // Health check
 app.get('/', (_req, res) => {
