@@ -26,9 +26,10 @@ exports.getSummary = async (req, res) => {
     const targetCalories = calculateTDEE(profile);
 
     const logResult = await pool.query(
-      `SELECT COALESCE(SUM(fl.calories), 0) AS consumed
+      `SELECT COALESCE(SUM(f.calories * fl.quantity), 0) AS consumed
        FROM food_logs fl
-       WHERE fl.user_id = $1 AND fl.logged_at = $2`,
+       JOIN foods f ON f.id = fl.food_id
+       WHERE fl.user_id = $1 AND fl.date = $2`,
       [req.user.id, date]
     );
 
@@ -47,14 +48,15 @@ exports.getWeeklyProgress = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT d.date,
-              COALESCE(SUM(fl.calories), 0) AS calories
+              COALESCE(SUM(f.calories * fl.quantity), 0) AS calories
        FROM generate_series(
               CURRENT_DATE - INTERVAL '6 days',
               CURRENT_DATE,
               '1 day'::interval
             ) AS d(date)
        LEFT JOIN food_logs fl
-         ON fl.logged_at = d.date::date AND fl.user_id = $1
+         ON fl.date = d.date::date AND fl.user_id = $1
+       LEFT JOIN foods f ON f.id = fl.food_id
        GROUP BY d.date
        ORDER BY d.date ASC`,
       [req.user.id]
